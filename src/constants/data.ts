@@ -89,6 +89,17 @@ export const users: User[] = [
   },
 ];
 
+export type Product = {
+  id: string;
+  restaurant_id: string;
+  name: string;
+  description: string;
+  price: number;
+  category: string;
+  in_stock: boolean;
+  image_url: string;
+};
+
 export type Transaction = {
   ID: string;
   category_id: string;

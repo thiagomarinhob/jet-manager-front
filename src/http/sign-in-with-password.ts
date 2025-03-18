@@ -9,6 +9,9 @@ interface SignInWithPasswordResponse {
   token: string;
   user: {
     id: string
+  };
+  restaurant: {
+    id: string
   }
 }
 
@@ -24,7 +27,6 @@ export async function signInWithPassword({
     }
   })
   .json<SignInWithPasswordResponse>();
-  console.log("🚀 ~ result:", result)
 
   return result;
 }

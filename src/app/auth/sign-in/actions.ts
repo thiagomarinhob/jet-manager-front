@@ -26,7 +26,7 @@ export async function signInWithEmailAndPassword(data: FormData) {
   const { email, password } = result.data;
 
   try {
-    const {token, user} = await signInWithPassword({
+    const {token, user, restaurant} = await signInWithPassword({
       email,
       password,
     });
@@ -35,7 +35,11 @@ export async function signInWithEmailAndPassword(data: FormData) {
      path: "/",
      maxAge: 60 * 60 * 24 * 7, // 7 days
    });
-    (await cookies()).set("user-fin", user.id, {
+    (await cookies()).set("user-id", user.id, {
+      path: "/",
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+    });
+    (await cookies()).set("restaurant-id", restaurant.id, {
       path: "/",
       maxAge: 60 * 60 * 24 * 7, // 7 days
     });

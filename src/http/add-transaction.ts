@@ -21,7 +21,6 @@ export async function addNewTransaction({
       category
     },
   }).json();
-  console.log("🚀 ~ result:", result)
   
   return result
 }

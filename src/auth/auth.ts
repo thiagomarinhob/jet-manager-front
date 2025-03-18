@@ -10,7 +10,7 @@ export async function isAuthenticated() {
 
 export async function getCurrentUser() {
   const cookieStore = await cookies();
-  return cookieStore.get("user-fin")?.value ?? null;
+  return cookieStore.get("user-id")?.value ?? null;
 }
 
 // export async function getCurrentMembership() {
@@ -24,6 +24,11 @@ export async function getCurrentUser() {
 
 //   return membership;
 // }
+
+export async function getCurrentRestaurant() {
+  const cookieStore = await cookies();
+  return cookieStore.get("restaurant-id")?.value ?? null;
+}
 
 export async function auth() {
   const token = (await cookies()).get("token")?.value;

@@ -13,7 +13,6 @@ import ProductListingPage from './_components/product-listing';
 import ProductTableAction from './_components/product-tables/product-table-action';
 import { getCurrentRestaurant } from '@/auth/auth';
 import getProducts from '@/http/get-products';
-import { Product } from '@/constants/data';
 
 export const metadata = {
   title: 'Dashboard: Products'
@@ -30,7 +29,7 @@ export default async function Page() {
   // This key is used for invoke suspense if any of the search params changed (used for filters).
   // const key = serialize({ ...searchParams });
   const restaurant = await getCurrentRestaurant()
-  const products: Product[] = await getProducts(restaurant as string)
+  const data = await getProducts(restaurant as string)
 
   return (
     <PageContainer>
@@ -53,7 +52,7 @@ export default async function Page() {
           key={1}
           fallback={<DataTableSkeleton columnCount={5} rowCount={10} />}
         >
-          <ProductListingPage products={products} />
+          <ProductListingPage products={data.items} />
         </Suspense>
       </div>
     </PageContainer>

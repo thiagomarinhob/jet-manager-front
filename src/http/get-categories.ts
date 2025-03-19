@@ -1,10 +1,20 @@
 import { Category } from "@/constants/data";
 import { api } from "./api-client";
 
-export default async function getCategories(userId: string) {
+interface ResponseCategory {
+  current_page: number;
+  has_next: boolean;
+  has_prev: boolean;
+  items: Category[];
+  page_size: number;
+  total_items: number;
+  total_pages: number;
+}
+
+export default async function getCategories(restaurant_id: string) {
   const result = await api
-    .get(`categories/users/${userId}`)
-    .json<Category[]>();
+    .get(`v1/restaurants/${restaurant_id}/categories`)
+    .json<ResponseCategory>();
 
   return result;
 }

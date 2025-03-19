@@ -13,6 +13,7 @@ import ProductListingPage from './_components/product-listing';
 import ProductTableAction from './_components/product-tables/product-table-action';
 import { getCurrentRestaurant } from '@/auth/auth';
 import getProducts from '@/http/get-products';
+import getCategories from '@/http/get-categories';
 
 export const metadata = {
   title: 'Dashboard: Products'
@@ -30,6 +31,7 @@ export default async function Page() {
   // const key = serialize({ ...searchParams });
   const restaurant = await getCurrentRestaurant()
   const data = await getProducts(restaurant as string)
+  const dataCategory = await getCategories(restaurant as string)
 
   return (
     <PageContainer>
@@ -47,7 +49,7 @@ export default async function Page() {
           </Link>
         </div>
         <Separator />
-        <ProductTableAction />
+        <ProductTableAction categories={dataCategory.items} />
         <Suspense
           key={1}
           fallback={<DataTableSkeleton columnCount={5} rowCount={10} />}

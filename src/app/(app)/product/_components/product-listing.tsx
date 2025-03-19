@@ -8,7 +8,7 @@ interface PropsProduct {
   products: Product[]
 }
 
-export default function ProductListingPage({products}: PropsProduct) {
+export default function ProductListingPage({ products }: PropsProduct) {
   function handleDelete(id: string) {
     console.log("h", id);
   }

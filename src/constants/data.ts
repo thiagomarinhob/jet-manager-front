@@ -113,7 +113,7 @@ export type Category = {
   ID: string;
   name: string;
   description: string;
-  created_at: string;
+  Active: boolean;
 };
 
 export type Employee = {
@@ -164,7 +164,7 @@ export const navItems: NavItem[] = [
   },
   {
     title: "Products",
-    href: "/dashboard/products",
+    href: "/product",
     icon: "prods",
     label: "products",
     tag: "New",

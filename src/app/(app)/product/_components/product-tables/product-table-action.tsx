@@ -38,7 +38,7 @@ export default function ProductTableAction({ categories }: PropsProductTableActi
       />
       <DataTableFilterBox
         filterKey="categories"
-        title="Categories"
+        title="Categorias"
         options={optionsCategories}
         setFilterValue={setCategoriesFilter}
         filterValue={categoriesFilter}

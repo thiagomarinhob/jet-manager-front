@@ -7,7 +7,7 @@ import { CellAction } from './cell-action';
 export const createColumns = (onDelete: (id: string) => void): ColumnDef<Product>[] => [
   {
     accessorKey: 'photo_url',
-    header: 'IMAGE',
+    header: 'Imagem',
     cell: ({ row }) => {
       return (
         <div className="relative aspect-square max-h-12">
@@ -23,15 +23,15 @@ export const createColumns = (onDelete: (id: string) => void): ColumnDef<Product
   },
   {
     accessorKey: 'name',
-    header: 'NAME'
+    header: 'Nome'
   },
   {
     accessorKey: 'category',
-    header: 'CATEGORY'
+    header: 'Categoria'
   },
   {
     accessorKey: 'price',
-    header: 'PRICE',
+    header: 'Preço',
     cell: ({ row }) => {
       const price = parseFloat(row.getValue('price'));
       const formattedPrice = new Intl.NumberFormat('pt-BR', {
@@ -44,7 +44,7 @@ export const createColumns = (onDelete: (id: string) => void): ColumnDef<Product
   },
   {
     accessorKey: 'description',
-    header: 'DESCRIPTION'
+    header: 'Descrição'
   },
 
   {

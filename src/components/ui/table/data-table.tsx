@@ -16,10 +16,11 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table';
-import {
-  DoubleArrowLeftIcon,
-  DoubleArrowRightIcon
-} from '@radix-ui/react-icons';
+import { Product } from '@/constants/data';
+// import {
+//   DoubleArrowLeftIcon,
+//   DoubleArrowRightIcon
+// } from '@radix-ui/react-icons';
 import {
   ColumnDef,
   flexRender,
@@ -36,20 +37,30 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
   totalItems: number;
   pageSizeOptions?: number[];
+  products: {
+    items: Product[];
+    total_items: number,
+    total_pages: number,
+    current_page: number,
+    page_size: number,
+    has_next: boolean,
+    has_prev: boolean
+  }
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   totalItems,
-  pageSizeOptions = [10, 20, 30, 40, 50]
+  pageSizeOptions = [10, 20, 30, 40, 50],
+  products
 }: DataTableProps<TData, TValue>) {
   const [currentPage, setCurrentPage] = useQueryState(
     'page',
     parseAsInteger.withOptions({ shallow: false }).withDefault(1)
   );
   const [pageSize, setPageSize] = useQueryState(
-    'limit',
+    'page_size',
     parseAsInteger
       .withOptions({ shallow: false, history: 'push' })
       .withDefault(10)
@@ -145,15 +156,15 @@ export function DataTable<TData, TValue>({
       <div className="flex flex-col items-center justify-end gap-2 space-x-2 py-4 sm:flex-row">
         <div className="flex w-full items-center justify-between">
           <div className="flex-1 text-sm text-muted-foreground">
-            {totalItems > 0 ? (
+            {products.total_items > 0 ? (
               <>
                 Showing{' '}
                 {paginationState.pageIndex * paginationState.pageSize + 1} to{' '}
                 {Math.min(
                   (paginationState.pageIndex + 1) * paginationState.pageSize,
-                  totalItems
+                  products.total_items
                 )}{' '}
-                of {totalItems} entries
+                of {products.total_items} entries
               </>
             ) : (
               'No entries found'
@@ -188,14 +199,14 @@ export function DataTable<TData, TValue>({
           <div className="flex w-[150px] items-center justify-center text-sm font-medium">
             {totalItems > 0 ? (
               <>
-                Page {paginationState.pageIndex + 1} of {table.getPageCount()}
+                Page {paginationState.pageIndex + 1} of {products.total_pages}
               </>
             ) : (
               'No pages'
             )}
           </div>
           <div className="flex items-center space-x-2">
-            <Button
+            {/* <Button
               aria-label="Go to first page"
               variant="outline"
               className="hidden h-8 w-8 p-0 lg:flex"
@@ -203,13 +214,13 @@ export function DataTable<TData, TValue>({
               disabled={!table.getCanPreviousPage()}
             >
               <DoubleArrowLeftIcon className="h-4 w-4" aria-hidden="true" />
-            </Button>
+            </Button> */}
             <Button
               aria-label="Go to previous page"
               variant="outline"
               className="h-8 w-8 p-0"
               onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
+              disabled={!products.has_prev}
             >
               <ChevronLeftIcon className="h-4 w-4" aria-hidden="true" />
             </Button>
@@ -218,11 +229,11 @@ export function DataTable<TData, TValue>({
               variant="outline"
               className="h-8 w-8 p-0"
               onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
+              disabled={!products.has_next}
             >
               <ChevronRightIcon className="h-4 w-4" aria-hidden="true" />
             </Button>
-            <Button
+            {/* <Button
               aria-label="Go to last page"
               variant="outline"
               className="hidden h-8 w-8 p-0 lg:flex"
@@ -230,7 +241,7 @@ export function DataTable<TData, TValue>({
               disabled={!table.getCanNextPage()}
             >
               <DoubleArrowRightIcon className="h-4 w-4" aria-hidden="true" />
-            </Button>
+            </Button> */}
           </div>
         </div>
       </div>

@@ -26,7 +26,7 @@ export const createColumns = (onDelete: (id: string) => void): ColumnDef<Product
     header: 'NAME'
   },
   {
-    accessorKey: 'category',
+    accessorKey: 'category.name',
     header: 'CATEGORY'
   },
   {

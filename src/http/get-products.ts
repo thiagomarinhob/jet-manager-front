@@ -43,7 +43,6 @@ export default async function getProducts(data: PropsProducts) {
   const url = `v1/restaurants/${data.restaurant_id}/products${
     queryString ? `?${queryString}` : ""
   }`;
-  console.log("🚀 ~ getProducts ~ url:", url)
 
   // Faz a chamada à API
   const result = await api.get(url).json<ResponseProducts>();

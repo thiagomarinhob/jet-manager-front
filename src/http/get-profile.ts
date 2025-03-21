@@ -10,7 +10,7 @@ interface GetTransactions {
 }
 
 export default async function getProfile(id: string) {
-  const result = await api.get(`/v1/profile /${id}`).json<GetTransactions>();
+  const result = await api.get(`/v1/profile/${id}`).json<GetTransactions>();
 
   return result;
 }

@@ -110,7 +110,7 @@ export type Transaction = {
 };
 
 export type Category = {
-  ID: string;
+  id: string;
   name: string;
   description: string;
   Active: boolean;

@@ -1,6 +1,5 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
 import { FileUploader } from '@/components/file-uploader';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -21,12 +20,10 @@ import {
   SelectValue
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Product } from '@/constants/mock-api';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
-import { toast } from 'sonner';
-import { useEffect, useState } from 'react';
+import { Category } from '@/constants/data';
 
 const MAX_FILE_SIZE = 5000000;
 const ACCEPTED_IMAGE_TYPES = [
@@ -37,7 +34,7 @@ const ACCEPTED_IMAGE_TYPES = [
 ];
 
 const formSchema = z.object({
-  image: z
+  image_url: z
     .any()
     .refine((files) => files?.length == 1, 'Image is required.')
     .refine(
@@ -51,98 +48,72 @@ const formSchema = z.object({
   name: z.string().min(2, {
     message: 'Product name must be at least 2 characters.'
   }),
-  category: z.string(),
-  price: z.string(),
+  category_id: z.string(),
+  price: z.number(),
   description: z.string().min(10, {
     message: 'Description must be at least 10 characters.'
   })
 });
 
+interface InitialDataI {
+  id: string;
+  restaurant_id: string;
+  name: string;
+  description: string;
+  price: number;
+  category_id: string;
+  type: string;
+  in_stock: boolean;
+  image_url: string;
+}
+
 export default function ProductForm({
   initialData,
-  pageTitle
+  pageTitle,
+  categories
 }: {
-  initialData: any | null;
+  initialData: InitialDataI | null;
   pageTitle: string;
+  categories: Category[] | null;
 }) {
-  const { data: session } = useSession();
   const defaultValues = {
     name: initialData?.name || '',
-    category: initialData?.ProductType?.ID || '',
-    price: (initialData?.price && parseInt(initialData?.price)) || '0',
+    category_id: initialData?.category_id || '',
+    price: typeof initialData?.price === 'number' ? initialData.price : parseFloat(initialData?.price || '0'),
     description: initialData?.description || ''
   };
-
-  const [categories, setCategories] = useState([]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     values: defaultValues
   });
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      if (!session) return;
-      try {
-        const response = await fetch(
-          'https://api-golang-1.onrender.com/product-types',
-          {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${session?.user.id}`,
-              'Establishment-ID': '6f2c6de9-0fad-4eee-859c-cbb41427db0e'
-            }
-          }
-        );
-        const data = await response.json();
-        setCategories(data || []);
-      } catch (error) {
-        console.error('Erro ao buscar produtos:', error);
-      }
-    };
-
-    fetchCategories();
-  }, [session]);
-
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    try {
-      const productData = {
-        name: values.name,
-        product_type_id: '9f8c9838-f0a6-4c8c-a2d3-0cb62459a66d',
-        price: values.price,
-        description: values.description
-      };
+    console.log("🚀 ~ onSubmit ~ values:", values)
+    // try {
+    //   const productData = {
+    //     name: values.name,
+    //     product_type_id: '9f8c9838-f0a6-4c8c-a2d3-0cb62459a66d',
+    //     price: values.price,
+    //     description: values.description
+    //   };
 
-      const response = await fetch(
-        'https://api-golang-1.onrender.com/products',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${session?.user.id}`,
-            'Establishment-ID': '6f2c6de9-0fad-4eee-859c-cbb41427db0e'
-          },
-          body: JSON.stringify(productData)
-        }
-      );
-
-      if (response) {
-        toast.success('Produto criado com sucesso!');
-        form.reset({
-          name: '',
-          category: '',
-          price: '0',
-          description: '',
-          image: null // ou [] dependendo do tipo esperado
-        });
-      } else {
-        toast.error('Erro ao criar o produto.');
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      toast.error('Ocorreu um erro ao criar o produto.');
-    }
+    //   if (response) {
+    //     toast.success('Produto criado com sucesso!');
+    //     form.reset({
+    //       name: '',
+    //       category_id: '',
+    //       price: 0,
+    //       description: '',
+    //       image_url: null // ou [] dependendo do tipo esperado
+    //     });
+    //   } else {
+    //     toast.error('Erro ao criar o produto.');
+    //   }
+    // } catch (error) {
+    //   console.error('Error:', error);
+    //   toast.error('Ocorreu um erro ao criar o produto.');
+    // }
   }
 
   return (
@@ -157,7 +128,7 @@ export default function ProductForm({
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <FormField
               control={form.control}
-              name="image"
+              name="image_url"
               render={({ field }) => (
                 <div className="space-y-6">
                   <FormItem className="w-full">
@@ -197,7 +168,7 @@ export default function ProductForm({
               />
               <FormField
                 control={form.control}
-                name="category"
+                name="category_id"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Category</FormLabel>
@@ -211,8 +182,8 @@ export default function ProductForm({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {categories.map((item: any) => (
-                          <SelectItem key={item.ID} value={item.ID}>
+                        {categories?.map((item: Category) => (
+                          <SelectItem key={item.id} value={item.id}>
                             {item.name}
                           </SelectItem>
                         ))}

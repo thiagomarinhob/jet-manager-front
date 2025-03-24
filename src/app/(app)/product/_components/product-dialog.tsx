@@ -1,13 +1,11 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+// import { useRouter } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-import { toast } from "sonner"
 import { ImagePlus, Plus } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -27,7 +25,6 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 import { productAction } from "./actions-create-products"
-import { useFormState } from "@/hooks/use-form-state"
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -73,7 +70,6 @@ interface ProductDialogProps {
 export default function ProductDialog({ categories = [], restaurantId, onSuccess}: ProductDialogProps) {
   const [open, setOpen] = useState(false)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
-  const router = useRouter()
 
   // Usar uma abordagem consistente para submissão
   const form = useForm<ProductFormValues>({
@@ -109,11 +105,12 @@ export default function ProductDialog({ categories = [], restaurantId, onSuccess
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
+      form.setValue("image_url", file.name)
+
       const reader = new FileReader()
       reader.onloadend = () => {
         const base64String = reader.result as string
         setImagePreview(base64String)
-        form.setValue("image_url", base64String) 
       }
       reader.readAsDataURL(file)
     }
@@ -137,7 +134,7 @@ export default function ProductDialog({ categories = [], restaurantId, onSuccess
               <FormField
                 control={form.control}
                 name="image_url"
-                render={({ field }) => (
+                render={() => (
                   <FormItem>
                     <FormLabel>Imagem</FormLabel>
                     <FormControl>

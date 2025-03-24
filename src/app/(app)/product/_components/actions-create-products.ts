@@ -30,15 +30,11 @@ export async function productAction(data: any){
 
   const restaurantID = restaurant_id as string;
   
-  console.log("Meu restaurante id: ", restaurant_id)
-
-  console.log("Meu data: ", data)
-  
   const result = productSchema.safeParse({
-    data,
+    ...data,
     price: Number(data.price),
   });
-  console.log('Resultado da validação:', result);
+
   if (!result.success) {
     console.log('Erros de validação:', result.error.errors);
   }
@@ -50,9 +46,6 @@ export async function productAction(data: any){
   
   const { name, description, price, in_stock, image_url, category_id } =
   result.data;
-  
-  
-  console.log("Dados recebidos:", Object.fromEntries(data));
 
   try {
     await createProduct({
@@ -68,11 +61,9 @@ export async function productAction(data: any){
     });
   } catch (err) {
     if (err instanceof HTTPError) {
-      console.error("Erro ao criar produto:", err);
       const { message } = await err.response.json();
       return { success: false, message, errors: null };
     }
-    console.error("Erro ao criar produto:", err);
     return {
       success: false,
       message: "Unexpected error, try again in a few minutes.",

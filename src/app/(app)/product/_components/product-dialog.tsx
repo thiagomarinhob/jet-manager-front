@@ -8,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { toast } from "sonner"
-import { ImagePlus } from "lucide-react"
+import { ImagePlus, Plus } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -20,91 +20,91 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { Checkbox } from '@/components/ui/checkbox';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
+import { productAction } from "./actions-create-products"
+import { useFormState } from "@/hooks/use-form-state"
+
 const formSchema = z.object({
   name: z.string().min(2, {
     message: "Nome deve ter pelo menos 2 caracteres.",
   }),
-  category: z.string().min(1, {
+  category_id: z.string().min(1, {
     message: "Selecione uma categoria.",
   }),
   price: z.coerce.number().positive({
     message: "Preço deve ser um valor positivo.",
   }),
-  amount: z.coerce.number().int().positive({
-    message: "Quantidade deve ser um número inteiro positivo.",
-  }),
+  in_stock: z.boolean().default(true).optional(),
   description: z.string().min(5, {
     message: "Descrição deve ter pelo menos 5 caracteres.",
   }),
-  image: z.string().optional(),
+  image_url: z.string().optional(),
 })
 
 type ProductFormValues = z.infer<typeof formSchema>
 
 const defaultValues: Partial<ProductFormValues> = {
   name: "",
-  category: "",
+  category_id: "",
   price: 0,
-  amount: 1,
+  in_stock: true,
   description: "",
-  image: "",
+  image_url: "",
+}
+
+interface Category {
+  id: string;
+  name: string;
+  description: string;
+  Active: boolean;
 }
 
 interface ProductDialogProps {
   restaurantId: string
-  onSuccess?: () => void
+  categories?: Category[]
+  onSuccess?: () => void;
 }
 
-export function ProductDialog({ restaurantId, onSuccess }: ProductDialogProps) {
+export default function ProductDialog({ categories = [], restaurantId, onSuccess}: ProductDialogProps) {
   const [open, setOpen] = useState(false)
-  const [loading, setLoading] = useState(false)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const router = useRouter()
 
+  // Usar uma abordagem consistente para submissão
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues,
   })
 
+  // Função para lidar com a submissão do formulário
   const onSubmit = async (data: ProductFormValues) => {
     try {
-      setLoading(true)
-
-      // Aqui você implementaria a lógica para enviar os dados para sua API
-      // Por exemplo:
-      // await fetch('/api/products', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ ...data, restaurantId }),
-      // })
-
-      console.log("Produto a ser criado:", { ...data, restaurantId })
-
-      // Simular um atraso para demonstração
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      toast.success("Produto adicionado com sucesso!")
-      form.reset(defaultValues)
-      setImagePreview(null)
-      setOpen(false)
-
-      if (onSuccess) {
-        onSuccess()
+      // Adicionar o restaurantId aos dados do formulário
+      const productData = {
+        ...data,
+        restaurant_id: restaurantId
+      };
+      
+      // Chamar a action com os dados completos
+      const result = await productAction(productData);
+      
+      if (result.success) {
+        // Fechar o diálogo e executar callback de sucesso
+        setOpen(false);
+        if (onSuccess) onSuccess();
+      } else {
+        // Tratar erros se necessário
+        console.error("Erro ao salvar produto:", result.message);
       }
-
-      router.refresh()
     } catch (error) {
-      console.error(error)
-      toast.error("Ocorreu um erro ao adicionar o produto.")
-    } finally {
-      setLoading(false)
+      console.error("Erro na submissão:", error);
     }
-  }
+  };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -113,19 +113,17 @@ export function ProductDialog({ restaurantId, onSuccess }: ProductDialogProps) {
       reader.onloadend = () => {
         const base64String = reader.result as string
         setImagePreview(base64String)
-        form.setValue("image", base64String)
+        form.setValue("image_url", base64String) 
       }
       reader.readAsDataURL(file)
     }
   }
 
-  const categories = ["Bebidas", "Entradas", "Pratos Principais", "Sobremesas", "Lanches", "Vegetariano", "Vegano"]
-
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button>
-          <ImagePlus className="mr-2 h-4 w-4" /> Adicionar Produto
+          <Plus className="mr-2 h-4 w-4" /> Add Novo Produto
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">
@@ -138,7 +136,7 @@ export function ProductDialog({ restaurantId, onSuccess }: ProductDialogProps) {
             <div className="grid grid-cols-1 gap-4">
               <FormField
                 control={form.control}
-                name="image"
+                name="image_url"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Imagem</FormLabel>
@@ -192,11 +190,15 @@ export function ProductDialog({ restaurantId, onSuccess }: ProductDialogProps) {
 
                 <FormField
                   control={form.control}
-                  name="category"
+                  name="category_id"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Categoria</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Selecione uma categoria" />
@@ -204,8 +206,8 @@ export function ProductDialog({ restaurantId, onSuccess }: ProductDialogProps) {
                         </FormControl>
                         <SelectContent>
                           {categories.map((category) => (
-                            <SelectItem key={category} value={category}>
-                              {category}
+                            <SelectItem key={category.id} value={category.id}>
+                              {category.name}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -233,13 +235,18 @@ export function ProductDialog({ restaurantId, onSuccess }: ProductDialogProps) {
 
                 <FormField
                   control={form.control}
-                  name="amount"
+                  name="in_stock"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Quantidade</FormLabel>
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 p-4">
                       <FormControl>
-                        <Input type="number" placeholder="1" {...field} />
+                        <Checkbox 
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
                       </FormControl>
+                      <div className="space-y-1 leading-none">
+                        <FormLabel>Em Stock</FormLabel>
+                      </div>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -262,11 +269,11 @@ export function ProductDialog({ restaurantId, onSuccess }: ProductDialogProps) {
             </div>
 
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={loading}>
+              <Button type="button" variant="outline" onClick={() => setOpen(false)}>
                 Cancelar
               </Button>
-              <Button type="submit" disabled={loading}>
-                {loading ? "Salvando..." : "Salvar produto"}
+              <Button type="submit">
+                {form.formState.isSubmitting ? "Salvando..." : "Salvar produto"}
               </Button>
             </DialogFooter>
           </form>
@@ -275,4 +282,5 @@ export function ProductDialog({ restaurantId, onSuccess }: ProductDialogProps) {
     </Dialog>
   )
 }
+
 

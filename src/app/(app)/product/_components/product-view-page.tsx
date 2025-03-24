@@ -18,7 +18,6 @@ type TProductViewPageProps = {
 };
 
 export default function ProductViewPage({ product, categories }: TProductViewPageProps) {
-  console.log("🚀 ~ ProductViewPage ~ product:", product)
   const pageTitle = 'Update Product';
 
   return <ProductForm initialData={product} categories={categories} pageTitle={pageTitle} />;

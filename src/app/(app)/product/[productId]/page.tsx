@@ -16,7 +16,6 @@ export default async function Page({ params }: PageProps) {
   const restaurant = await getCurrentRestaurant()
   const dataProduct = await getProduct(restaurant as string, params.productId)
   const dataCategory = await getCategories(restaurant as string)
-  console.log("🚀 ~ Page ~ dataProduct:", dataProduct)
   return (
     <PageContainer scrollable>
       <div className="flex-1 space-y-4">

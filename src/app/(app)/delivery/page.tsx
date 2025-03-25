@@ -5,7 +5,6 @@ import { getCurrentRestaurant } from "@/auth/auth";
 export default async function Page() {
   const restaurant = await getCurrentRestaurant()
   const data = await getDeliveryToday(restaurant as string)
-  console.log("🚀 ~ Page ~ data:", data)
   
-  return <DeliveryOrderManagement />
+  return <DeliveryOrderManagement {...data} />
 }

@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { X, Clock, CheckCircle, Truck, Coffee, Search, Plus, ChevronDown, Eye, MoreHorizontal, Phone } from 'lucide-react';
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,6 +13,7 @@ import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import PageContainer from '@/components/layout/page-container';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { updateStatusOrder } from '@/http/update-status-order';
 
 // Dados de exemplo
 const initialOrders = [
@@ -79,12 +80,26 @@ const initialOrders = [
   }
 ];
 
+interface IProps {
+  count: number;
+  date: string;
+  orders: unknown[];
+}
+
 // Componente principal
-const DeliveryOrderManagement = () => {
-  const [orders, setOrders] = useState(initialOrders);
+const DeliveryOrderManagement = (props: IProps) => {
+  const data = props;
+  const [orders, setOrders] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
+
+  useEffect(() => {
+    if (data && data.orders && data.orders.length > 0) {
+      setOrders(data.orders)
+    }
+  }, [data])
+
 
   // Status possíveis e suas configurações
   const statusConfig = {
@@ -133,32 +148,40 @@ const DeliveryOrderManagement = () => {
   };
 
   // Filtragem de pedidos
-  const filteredOrders = orders.filter(order =>
-    order.customer.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    order.id.includes(searchTerm)
-  );
+  // const filteredOrders = orders.filter(order =>
+  //   order.customer.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //   order.id.includes(searchTerm)
+  // );
 
   // Agrupamento de pedidos por status
   const ordersByStatus = {
-    pending: filteredOrders.filter(order => order.status === 'pending'),
-    preparing: filteredOrders.filter(order => order.status === 'preparing'),
-    ready: filteredOrders.filter(order => order.status === 'ready'),
-    delivering: filteredOrders.filter(order => order.status === 'delivering'),
-    completed: filteredOrders.filter(order => order.status === 'completed')
+    pending: orders.filter(order => order.status === 'pending'),
+    preparing: orders.filter(order => order.status === 'preparing'),
+    ready: orders.filter(order => order.status === 'ready'),
+    delivering: orders.filter(order => order.status === 'delivering'),
+    completed: orders.filter(order => order.status === 'completed')
   };
 
   // Atualizar status de um pedido
-  const updateOrderStatus = (orderId, newStatus) => {
-    setOrders(prevOrders =>
-      prevOrders.map(order =>
-        order.id === orderId ? { ...order, status: newStatus } : order
-      )
-    );
+  const updateOrderStatus = async (restaurant_id, order_id, status) => {
+    try {
+      const res = await updateStatusOrder({ restaurant_id, order_id, status });
+      console.log("🚀 ~ updateOrderStatus ~ res:", res)
+      setOrders(prevOrders =>
+        prevOrders.map(order =>
+          order.id === order_id ? { ...order, status: status } : order
+        )
+      );
+      return res;
+    } catch (error) {
+      console.error("Erro ao atualizar status do pedido:", error);
+      throw error;
+    }
 
     // Se o pedido detalhado foi atualizado, também atualize sua visualização
-    if (selectedOrder && selectedOrder.id === orderId) {
-      setSelectedOrder(prev => ({ ...prev, status: newStatus }));
-    }
+    // if (selectedOrder && selectedOrder.id === orderId) {
+    //   setSelectedOrder(prev => ({ ...prev, status: newStatus }));
+    // }
   };
 
   // Abrir detalhes de um pedido
@@ -237,9 +260,9 @@ const DeliveryOrderManagement = () => {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <Button>
+            {/* <Button>
               <Plus className="h-4 w-4 mr-2" /> Novo Pedido
-            </Button>
+            </Button> */}
           </div>
         </div>
 
@@ -269,31 +292,29 @@ const DeliveryOrderManagement = () => {
                       <CardContent className="p-4">
                         <div className="flex justify-between items-start mb-3">
                           <div>
-                            <span className="font-semibold">#{order.id}</span>
-                            <h4 className="font-medium">{order.customer}</h4>
+                            <span className="font-semibold">{order.code}</span>
+                            <h4 className="font-medium">{order.customer_name}</h4>
                           </div>
                           <div className="text-right">
-                            <span className="text-xs text-muted-foreground">{order.time}</span>
-                            <p className="font-medium">{formatPrice(order.total)}</p>
+                            <span className="text-xs text-muted-foreground">{formatTime(new Date(order.created_at))}</span>
+                            <p className="font-medium">{formatPrice(order.total_amount)}</p>
                           </div>
                         </div>
-                        <div className="text-sm text-muted-foreground mb-2 truncate">{order.address}</div>
+                        <div className="text-sm text-muted-foreground mb-2 truncate">{order.delivery_address}</div>
                         <div className="border-t pt-2 mt-2 text-sm text-muted-foreground">
-                          {order.items.length} item(s) • {order.paymentMethod}
+                          {order.order_items.length} item(s) • pix
                         </div>
                         <div className="flex justify-between mt-3">
                           <div className="flex space-x-1">
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              className="h-8 w-8"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                window.open(`tel:${order.phone.replace(/\D/g, '')}`)
-                              }}
-                            >
-                              <Phone className="h-3 w-3" />
-                            </Button>
+                            <a href={`https://wa.me/55${order.customer_phone.replace(/\D/g, '')}`} target="_blank" >
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                className="h-8 w-8"
+                              >
+                                <Phone className="h-3 w-3" />
+                              </Button>
+                            </a>
                             <Button
                               variant="outline"
                               size="icon"
@@ -314,7 +335,7 @@ const DeliveryOrderManagement = () => {
                                 className="text-xs h-8"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  updateOrderStatus(order.id, getNextStatus(status));
+                                  updateOrderStatus(order.restaurant_id, order.id, getNextStatus(status));
                                 }}
                               >
                                 → {statusConfig[getNextStatus(status)].name}
@@ -341,7 +362,7 @@ const DeliveryOrderManagement = () => {
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <div className="flex items-center space-x-2">
-                <DialogTitle>Pedido #{selectedOrder?.id}</DialogTitle>
+                <DialogTitle>Pedido {selectedOrder?.code}</DialogTitle>
                 {selectedOrder && (
                   <Badge variant={getStatusBadgeVariant(selectedOrder.status)}>
                     {statusConfig[selectedOrder.status].name}
@@ -357,9 +378,9 @@ const DeliveryOrderManagement = () => {
                     <h3 className="font-medium text-muted-foreground mb-2">Informações do Cliente</h3>
                     <Card>
                       <CardContent className="p-4 space-y-2">
-                        <p className="text-sm"><span className="font-medium">Nome:</span> {selectedOrder.customer}</p>
-                        <p className="text-sm"><span className="font-medium">Telefone:</span> {selectedOrder.phone}</p>
-                        <p className="text-sm"><span className="font-medium">Endereço:</span> {selectedOrder.address}</p>
+                        <p className="text-sm"><span className="font-medium">Nome:</span> {selectedOrder.customer_name}</p>
+                        <p className="text-sm"><span className="font-medium">Telefone:</span> {selectedOrder.customer_phone}</p>
+                        <p className="text-sm"><span className="font-medium">Endereço:</span> {selectedOrder.delivery_address}</p>
                       </CardContent>
                     </Card>
                   </div>
@@ -367,10 +388,10 @@ const DeliveryOrderManagement = () => {
                     <h3 className="font-medium text-muted-foreground mb-2">Informações do Pedido</h3>
                     <Card>
                       <CardContent className="p-4 space-y-2">
-                        <p className="text-sm"><span className="font-medium">Data:</span> {formatDate(selectedOrder.createdAt)}</p>
-                        <p className="text-sm"><span className="font-medium">Horário:</span> {formatTime(selectedOrder.createdAt)}</p>
-                        <p className="text-sm"><span className="font-medium">Tempo:</span> {getTimeElapsed(selectedOrder.createdAt)}</p>
-                        <p className="text-sm"><span className="font-medium">Pagamento:</span> {selectedOrder.paymentMethod}</p>
+                        <p className="text-sm"><span className="font-medium">Data:</span> {formatDate(new Date(selectedOrder.created_at))}</p>
+                        <p className="text-sm"><span className="font-medium">Horário:</span> {formatTime(new Date(selectedOrder.created_at))}</p>
+                        <p className="text-sm"><span className="font-medium">Tempo:</span> {getTimeElapsed(new Date(selectedOrder.created_at))}</p>
+                        <p className="text-sm"><span className="font-medium">Pagamento:</span> PIX</p>
                       </CardContent>
                     </Card>
                   </div>
@@ -389,11 +410,11 @@ const DeliveryOrderManagement = () => {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {selectedOrder.items.map((item, index) => (
-                          <TableRow key={index}>
+                        {selectedOrder.order_items.map((item, index) => (
+                          <TableRow key={item.id}>
                             <TableCell>
-                              <div>{item.name}</div>
-                              {item.notes && <div className="text-xs text-muted-foreground mt-1">{item.notes}</div>}
+                              <div>{item.product.name}</div>
+                              {item.product.notes && <div className="text-xs text-muted-foreground mt-1">{item.product.notes}</div>}
                             </TableCell>
                             <TableCell className="text-center">{item.quantity}</TableCell>
                             <TableCell className="text-right">{formatPrice(item.price)}</TableCell>
@@ -407,7 +428,7 @@ const DeliveryOrderManagement = () => {
                             Total do Pedido
                           </TableCell>
                           <TableCell className="text-right font-medium">
-                            {formatPrice(selectedOrder.total)}
+                            {formatPrice(selectedOrder.total_amount)}
                           </TableCell>
                         </TableRow>
                       </TableFooter>
@@ -426,7 +447,7 @@ const DeliveryOrderManagement = () => {
                         variant={selectedOrder.status === status ? config.variant : "outline"}
                         size="sm"
                         className="flex items-center space-x-1"
-                        onClick={() => updateOrderStatus(selectedOrder.id, status)}
+                        onClick={() => updateOrderStatus(selectedOrder.restaurant_id, selectedOrder.id, status)}
                       >
                         <span>{config.icon}</span>
                         <span className="ml-1">{config.name}</span>
@@ -455,7 +476,7 @@ const DeliveryOrderManagement = () => {
                         <AlertDialogAction
                           className="bg-red-600 hover:bg-red-700"
                           onClick={() => {
-                            updateOrderStatus(selectedOrder.id, 'canceled');
+                            updateOrderStatus(selectedOrder.restaurant_id, selectedOrder.id, 'canceled');
                             setIsDetailOpen(false);
                           }}
                         >

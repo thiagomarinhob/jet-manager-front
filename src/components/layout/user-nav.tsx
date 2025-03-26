@@ -13,7 +13,28 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-export function UserNav({ status = "green"}) {
+interface IProfile {
+  email: string;
+  id: string;
+  name: string;
+  restaurant: {
+    id: string;
+    name: string;
+    description: string;
+    address: string;
+    phone: string;
+    email: string;
+    logo: string;
+    subscription_plan: string;
+    status: string;
+    trial_ends_at: string;
+  };
+  restaurant_id: string;
+  type: string;
+}
+
+export function UserNav(user: IProfile) {
+  const status = "green"
   const statusColor = {
     green: "bg-green-400",
     red: "bg-red-400",
@@ -25,7 +46,7 @@ export function UserNav({ status = "green"}) {
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar>
             <AvatarImage src="/avatar.jpg" alt="@shadcn" />
-            <AvatarFallback>Kay</AvatarFallback>
+            <AvatarFallback>{user?.name?.slice(0, 2)?.toUpperCase() || 'CN'}</AvatarFallback>
           </Avatar>
           <span
             className={`-bottom-1 -right-[4px] absolute  w-3 h-3 ${statusColor} border-2 border-white dark:border-gray-800 rounded-full`}
@@ -35,9 +56,9 @@ export function UserNav({ status = "green"}) {
       <DropdownMenuContent className="w-56" align="start" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{"Khaled"}</p>
+            <p className="text-sm font-medium leading-none">{user.name}</p>
             <p className="text-xs leading-none text-muted-foreground">
-              {"khaled@me.com"}
+              {user.email}
             </p>
           </div>
         </DropdownMenuLabel>

@@ -1,8 +1,8 @@
-import { isAuthenticated } from "@/auth/auth";
+import { getAuthenticatedProfile } from "@/auth/auth";
 import { redirect } from "next/navigation";
 
 export default async function home() {
-  if (!(await isAuthenticated())) {
+  if (!((await getAuthenticatedProfile()).authenticated)) {
    return redirect('/auth/sign-in')
   }
 }

@@ -1,5 +1,4 @@
 'use client';
-// import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   Collapsible,
   CollapsibleContent,
@@ -34,6 +33,7 @@ import {
   BadgeCheck,
   Bell,
   ChevronRight,
+  ChevronsUpDown,
   CreditCard,
   GalleryVerticalEnd,
   LogOut
@@ -42,6 +42,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import * as React from 'react';
 import { Icons } from '../icons';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 
 export const company = {
   name: 'Acme Inc',
@@ -49,8 +50,27 @@ export const company = {
   plan: 'Enterprise'
 };
 
-export default function AppSidebar() {
-  // const { data: session } = useSession();
+interface IProfile {
+  email: string;
+  id: string;
+  name: string;
+  restaurant: {
+    id: string;
+    name: string;
+    description: string;
+    address: string;
+    phone: string;
+    email: string;
+    logo: string;
+    subscription_plan: string;
+    status: string;
+    trial_ends_at: string;
+  };
+  restaurant_id: string;
+  type: string;
+}
+
+export default function AppSidebar(user: IProfile) {
   const pathname = usePathname();
 
   return (
@@ -61,8 +81,8 @@ export default function AppSidebar() {
             <company.logo className="size-4" />
           </div>
           <div className="grid flex-1 text-left text-sm leading-tight">
-            <span className="truncate font-semibold">{company.name}</span>
-            <span className="truncate text-xs">{company.plan}</span>
+            <span className="truncate font-semibold">{user.restaurant.name}</span>
+            <span className="truncate text-xs">{user.restaurant.subscription_plan}</span>
           </div>
         </div>
       </SidebarHeader>
@@ -132,30 +152,32 @@ export default function AppSidebar() {
           <SidebarMenuItem>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                {/* <SidebarMenuButton
+                <SidebarMenuButton
                   size="lg"
                   asChild
                   className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                 >
+                  <div>
                   <Avatar className="h-8 w-8 rounded-lg">
                     <AvatarImage
-                      src={session?.user?.image || ''}
-                      alt={session?.user?.name || ''}
+                      src={user.restaurant.logo || ''}
+                        alt={user.restaurant.name || ''}
                     />
                     <AvatarFallback className="rounded-lg">
-                      {session?.user?.name?.slice(0, 2)?.toUpperCase() || 'CN'}
+                      {user?.name?.slice(0, 2)?.toUpperCase() || 'CN'}
                     </AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
                     <span className="truncate font-semibold">
-                      Teste
+                      {user.name}
                     </span>
                     <span className="truncate text-xs">
-                      Teste
+                      {user.email}
                     </span>
                   </div>
-                  <ChevronsUpDown className="ml-auto size-4" />
-                </SidebarMenuButton> */}
+                    <ChevronsUpDown className="ml-auto size-4" />
+                  </div>
+                </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
@@ -165,25 +187,25 @@ export default function AppSidebar() {
               >
                 <DropdownMenuLabel className="p-0 font-normal">
                   <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                    {/* <Avatar className="h-8 w-8 rounded-lg">
+                    <Avatar className="h-8 w-8 rounded-lg">
                       <AvatarImage
-                        src={session?.user?.image || ''}
-                        alt={session?.user?.name || ''}
+                        src={user?.restaurant.logo || ''}
+                        alt={user?.name || ''}
                       />
                       <AvatarFallback className="rounded-lg">
-                        {session?.user?.name?.slice(0, 2)?.toUpperCase() ||
+                        {user?.name?.slice(0, 2)?.toUpperCase() ||
                           'CN'}
                       </AvatarFallback>
                     </Avatar>
                     <div className="grid flex-1 text-left text-sm leading-tight">
                       <span className="truncate font-semibold">
-                        {session?.user?.name || ''}
+                        {user?.name || ''}
                       </span>
                       <span className="truncate text-xs">
                         {' '}
-                        {session?.user?.email || ''}
+                        {user?.email || ''}
                       </span>
-                    </div> */}
+                    </div>
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />

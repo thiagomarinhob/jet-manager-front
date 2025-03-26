@@ -11,15 +11,10 @@ export const GENDER_OPTIONS = [
 
 export function useTransactionTableFilters() {
   const [searchQuery, setSearchQuery] = useQueryState(
-    'q',
-    searchParams.q
+    'name',
+    searchParams.name
       .withOptions({ shallow: false, throttleMs: 1000 })
       .withDefault('')
-  );
-
-  const [genderFilter, setGenderFilter] = useQueryState(
-    'gender',
-    searchParams.gender.withOptions({ shallow: false }).withDefault('')
   );
 
   const [page, setPage] = useQueryState(
@@ -29,20 +24,17 @@ export function useTransactionTableFilters() {
 
   const resetFilters = useCallback(() => {
     setSearchQuery(null);
-    setGenderFilter(null);
 
     setPage(1);
-  }, [setSearchQuery, setGenderFilter, setPage]);
+  }, [setSearchQuery, setPage]);
 
   const isAnyFilterActive = useMemo(() => {
-    return !!searchQuery || !!genderFilter;
-  }, [searchQuery, genderFilter]);
+    return !!searchQuery;
+  }, [searchQuery]);
 
   return {
     searchQuery,
     setSearchQuery,
-    genderFilter,
-    setGenderFilter,
     page,
     setPage,
     resetFilters,

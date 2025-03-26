@@ -6,7 +6,28 @@ import SearchInput from '../search-input';
 import { UserNav } from './user-nav';
 import ThemeToggle from './ThemeToggle/theme-toggle';
 
-export default function Header() {
+interface IProfile {
+  email: string;
+  id: string;
+  name: string;
+  restaurant: {
+    id: string;
+    name: string;
+    description: string;
+    address: string;
+    phone: string;
+    email: string;
+    logo: string;
+    subscription_plan: string;
+    status: string;
+    trial_ends_at: string;
+  };
+  restaurant_id: string;
+  type: string;
+}
+
+
+export default function Header(user: IProfile) {
   return (
     <header className="flex h-16 shrink-0 items-center justify-between gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
       <div className="flex items-center gap-2 px-4">
@@ -19,7 +40,7 @@ export default function Header() {
         <div className="hidden md:flex">
           <SearchInput />
         </div>
-        <UserNav />
+        <UserNav {...user} />
         <ThemeToggle />
       </div>
     </header>

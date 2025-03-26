@@ -14,23 +14,27 @@ import ProductTableAction from './_components/product-tables/product-table-actio
 import { getCurrentRestaurant } from '@/auth/auth';
 import getProducts from '@/http/get-products';
 import getCategories from '@/http/get-categories';
+import { searchParamsCache, serialize } from '@/lib/searchparams';
+import { SearchParams } from 'nuqs';
 
 export const metadata = {
   title: 'Dashboard: Products'
 };
 
-// type pageProps = {
-//   searchParams: SearchParams;
-// };
+type pageProps = {
+  searchParams: SearchParams;
+};
 
-export default async function Page() {
+export default async function Page({ searchParams }: pageProps) {
   // Allow nested RSCs to access the search params (in a type-safe way)
-  // searchParamsCache.parse(searchParams);
-
+  searchParamsCache.parse(searchParams);
+  
   // This key is used for invoke suspense if any of the search params changed (used for filters).
-  // const key = serialize({ ...searchParams });
+  const params = await searchParams;
+  const key = serialize({ ...params });
+
   const restaurant = await getCurrentRestaurant()
-  const data = await getProducts(restaurant as string)
+  const data = await getProducts({restaurant_id: restaurant as string, searchParams})
   const dataCategory = await getCategories(restaurant as string)
 
   return (
@@ -51,10 +55,10 @@ export default async function Page() {
         <Separator />
         <ProductTableAction categories={dataCategory.items} />
         <Suspense
-          key={1}
+          key={key}
           fallback={<DataTableSkeleton columnCount={5} rowCount={10} />}
         >
-          <ProductListingPage products={data.items} />
+          <ProductListingPage products={data} />
         </Suspense>
       </div>
     </PageContainer>

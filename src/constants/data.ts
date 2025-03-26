@@ -110,7 +110,7 @@ export type Transaction = {
 };
 
 export type Category = {
-  id: string;
+  ID: string;
   name: string;
   description: string;
   Active: boolean;
@@ -170,10 +170,10 @@ export const navItems: NavItem[] = [
     tag: "New",
   },
   {
-    title: "Delivery",
-    href: "/delivery",
+    title: "Ad Details",
+    href: "/dashboard/addetails",
     icon: "addetails",
-    label: "delivery",
+    label: "addetails",
   },
   {
     title: "Chat",

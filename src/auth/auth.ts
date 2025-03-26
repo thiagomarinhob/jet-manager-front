@@ -1,29 +1,40 @@
+import getProfile from "@/http/get-profile";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-// import { getMembership } from "@/http/get-membership";
-// import { getProfile } from "@/http/get-profile";
-
-export async function isAuthenticated() {
+export async function hasTokenInCookies() {
   return !!(await cookies()).get("token")?.value;
+}
+
+export async function getTokenFromCookies() {
+  return (await cookies()).get("token")?.value;
+}
+
+export async function getAuthenticatedProfile() {
+  try {
+    const token = await getTokenFromCookies();
+    if (!token) {
+      return { authenticated: false, profile: null };
+    }
+
+    const response = await getProfile();
+
+    if (!response) {
+      return { authenticated: false, profile: null };
+    }
+
+    const profile = await response;
+    return { authenticated: true, profile };
+  } catch (error) {
+    console.error("Erro ao obter perfil:", error);
+    return { authenticated: false, profile: null };
+  }
 }
 
 export async function getCurrentUser() {
   const cookieStore = await cookies();
   return cookieStore.get("user-id")?.value ?? null;
 }
-
-// export async function getCurrentMembership() {
-//   const org = getCurrentOrg();
-
-//   if (!org) {
-//     return null;
-//   }
-
-//   const { membership } = await getMembership(org);
-
-//   return membership;
-// }
 
 export async function getCurrentRestaurant() {
   const cookieStore = await cookies();
@@ -36,12 +47,6 @@ export async function auth() {
   if (!token) {
     redirect("/auth/sign-in");
   }
-
-  // try {
-  //   const { user } = await getProfile();
-
-  //   return { user };
-  // } catch {}
 
   redirect("/api/auth/sign-out");
 }

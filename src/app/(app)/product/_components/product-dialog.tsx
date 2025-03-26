@@ -2,11 +2,12 @@
 
 import type React from "react"
 import { useState } from "react"
-// import { useRouter } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { ImagePlus, Plus } from "lucide-react"
+
+import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -59,6 +60,7 @@ interface Category {
   name: string;
   description: string;
   Active: boolean;
+
 }
 
 interface ProductDialogProps {
@@ -72,6 +74,7 @@ export default function ProductDialog({ categories = [], restaurantId, onSuccess
   const [imagePreview, setImagePreview] = useState<string | null>(null)
 
   // Usar uma abordagem consistente para submissão
+
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues,
@@ -101,6 +104,7 @@ export default function ProductDialog({ categories = [], restaurantId, onSuccess
       console.error("Erro na submissão:", error);
     }
   };
+
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -279,5 +283,4 @@ export default function ProductDialog({ categories = [], restaurantId, onSuccess
     </Dialog>
   )
 }
-
 

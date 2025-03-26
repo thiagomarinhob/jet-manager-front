@@ -101,7 +101,7 @@ export type Product = {
 };
 
 export type Transaction = {
-  ID: string;
+  id: string;
   category_id: string;
   type: string;
   amount: string;

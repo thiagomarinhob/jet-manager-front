@@ -4,7 +4,6 @@ import { HTTPError } from "ky";
 import { cookies } from "next/headers";
 import { z } from "zod";
 
-// import { acceptInvite } from "@/http/accept-invite";
 import { signInWithPassword } from "@/http/sign-in-with-password";
 
 const signInSchema = z.object({
@@ -19,55 +18,53 @@ export async function signInWithEmailAndPassword(data: FormData) {
 
   if (!result.success) {
     const errors = result.error.flatten().fieldErrors;
-
     return { success: false, message: null, errors };
   }
 
   const { email, password } = result.data;
 
   try {
-    const {token, user, restaurant} = await signInWithPassword({
+    const { token, user, restaurant } = await signInWithPassword({
       email,
       password,
     });
 
-   (await cookies()).set("token", token, {
-     path: "/",
-     maxAge: 60 * 60 * 24 * 7, // 7 days
-   });
-    (await cookies()).set("user-id", user.id, {
-      path: "/",
-      maxAge: 60 * 60 * 24 * 7, // 7 days
-    });
-    (await cookies()).set("restaurant-id", restaurant.id, {
-      path: "/",
-      maxAge: 60 * 60 * 24 * 7, // 7 days
-    });
-    // const inviteId = cookies().get("inviteId")?.value;
+    const cookieStore = cookies(); // Pegamos uma única instância de cookies()
 
-    // if (inviteId) {
-    //   try {
-    //     await acceptInvite(inviteId);
-    //     cookies().delete("inviteId");
-    //   } catch (e) {
-    //     console.log(e);
-    //   }
-    // }
+    cookieStore.set("token", token, {
+      path: "/",
+      maxAge: 60 * 60 * 24 * 7, // 7 dias
+    });
+    cookieStore.set("user-id", user.id, {
+      path: "/",
+      maxAge: 60 * 60 * 24 * 7, // 7 dias
+    });
+    cookieStore.set("restaurant-id", restaurant.id, {
+      path: "/",
+      maxAge: 60 * 60 * 24 * 7, // 7 dias
+    });
+
+    return { success: true, message: "Login realizado com sucesso!" };
   } catch (err) {
-    if (err instanceof HTTPError) {
-      const { message } = await err.response.json();
+    console.error("Erro ao fazer login:", err);
 
-      return { success: false, message, errors: null };
+    if (err instanceof HTTPError && err.response) {
+      try {
+        const contentType = err.response.headers.get("content-type");
+        
+        if (contentType && contentType.includes("application/json")) {
+          const responseData = await err.response.json();
+          return { success: false, message: responseData.message || "Erro desconhecido.", errors: null };
+        } else {
+          const textResponse = await err.response.text(); // Caso a resposta não seja JSON
+          return { success: false, message: textResponse || "Erro inesperado no servidor.", errors: null };
+        }
+      } catch (parseError) {
+        console.error("Erro ao processar a resposta do erro:", parseError);
+        return { success: false, message: "Erro ao processar a resposta do servidor.", errors: null };
+      }
     }
 
-    console.error(err);
-
-    return {
-      success: false,
-      message: "Unexpected error, try again in a few minutes.",
-      errors: null,
-    };
+    return { success: false, message: "Erro inesperado.", errors: null };
   }
-
-  return { success: true, message: null, errors: null };
 }

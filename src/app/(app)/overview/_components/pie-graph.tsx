@@ -60,8 +60,8 @@ export function PieGraph() {
   return (
     <Card className="flex flex-col">
       <CardHeader className="items-center pb-0">
-        <CardTitle>Pie Chart - Donut with Text</CardTitle>
-        <CardDescription>January - June 2024</CardDescription>
+        <CardTitle>Gráfico de Pizza - Com texto</CardTitle>
+        <CardDescription>Jan - Jun 2025</CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
         <ChartContainer
@@ -102,7 +102,7 @@ export function PieGraph() {
                           y={(viewBox.cy || 0) + 24}
                           className="fill-muted-foreground"
                         >
-                          Visitors
+                          Visitas
                         </tspan>
                       </text>
                     );
@@ -115,10 +115,10 @@ export function PieGraph() {
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
         <div className="flex items-center gap-2 font-medium leading-none">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
+          Tedência de crescimento de 5,2 nesse último mês <TrendingUp className="h-4 w-4" />
         </div>
         <div className="leading-none text-muted-foreground">
-          Showing total visitors for the last 6 months
+          Mostrando total de visitas nos últmos 6 meses
         </div>
       </CardFooter>
     </Card>

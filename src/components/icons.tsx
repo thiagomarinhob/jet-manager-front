@@ -35,6 +35,8 @@ import {
   LayoutDashboard,
   PackageSearch,
   MessageCircleMore,
+  BookUser,
+  Table,
 } from "lucide-react";
 
 export type Icon = LucideIcon;
@@ -67,12 +69,14 @@ export const Icons = {
   moon: Moon,
   laptop: Laptop,
   home: Home,
+  table: Table,
   inbox: Inbox,
   pricing: DollarSign,
   addetails: ShoppingCart,
   dashb: LayoutDashboard,
   prods: PackageSearch,
   chat: MessageCircleMore,
+  bookUser: BookUser,
   twitter: (props: IconProps) => (
     <svg
       {...props}

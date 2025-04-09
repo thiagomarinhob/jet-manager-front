@@ -247,7 +247,7 @@ const DeliveryOrderManagement = (props: IProps) => {
     <PageContainer>
       <div className="space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-          <h1 className="text-2xl font-semibold">Pedidos Delivery</h1>
+          <h1 className="text-2xl font-semibold">Pedidos no Delivery</h1>
           <div className="mt-3 sm:mt-0 flex items-center">
             <div className="relative mr-4">
               <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />

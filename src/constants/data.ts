@@ -151,29 +151,29 @@ export interface NavItem {
 
 export const navItems: NavItem[] = [
   {
-    title: "Home",
-    href: "/dashboard",
-    icon: "home",
-    label: "home",
-  },
-  {
-    title: "Overview",
+    title: "Dashboard",
     href: "/overview",
     icon: "dashb",
     label: "overview",
   },
   {
-    title: "Products",
+    title: "Produtos",
     href: "/product",
     icon: "prods",
     label: "products",
     tag: "New",
   },
   {
-    title: "Delivery",
+    title: "Pedidos",
     href: "/delivery",
     icon: "addetails",
     label: "delivery",
+  },
+  {
+    title: "Mesas",
+    href: "/tables",
+    icon: "table",
+    label: "tables",
   },
   {
     title: "Chat",
@@ -182,39 +182,20 @@ export const navItems: NavItem[] = [
     label: "Chat",
     tag: "New", // Example count
   },
+  // {
+  //   title: "User",
+  //   href: "/dashboard/user",
+  //   icon: "user",
+  //   label: "user",
+  // },
   {
-    title: "Inbox",
-    href: "/dashboard/inbox",
-    icon: "inbox",
-    label: "Inbox",
-    count: 5, // Example count
-  },
-  {
-    title: "User",
-    href: "/dashboard/user",
-    icon: "user",
-    label: "user",
-  },
-  {
-    title: "Employees",
+    title: "Funcionários",
     href: "/dashboard/employee",
-    icon: "employee",
+    icon: "bookUser",
     label: "employees",
   },
   {
-    title: "Profile",
-    href: "/dashboard/profile",
-    icon: "profile",
-    label: "profile",
-  },
-  {
-    title: "Kanban",
-    href: "/dashboard/kanban",
-    icon: "kanban",
-    label: "kanban",
-  },
-  {
-    title: "Settings",
+    title: "Configurações",
     href: "/dashboard/settings",
     icon: "settings",
     label: "settings",

@@ -41,9 +41,9 @@ export function AreaGraph() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Area Chart - Stacked</CardTitle>
+        <CardTitle>Gáfico de Área - Empilhado</CardTitle>
         <CardDescription>
-          Showing total visitors for the last 6 months
+          Mostrando o total de visitas dos últimos 6 meses
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -94,10 +94,10 @@ export function AreaGraph() {
         <div className="flex w-full items-start gap-2 text-sm">
           <div className="grid gap-2">
             <div className="flex items-center gap-2 font-medium leading-none">
-              Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
+              Tendência de alta de 5,2% nesse mês<TrendingUp className="h-4 w-4" />
             </div>
             <div className="flex items-center gap-2 leading-none text-muted-foreground">
-              January - June 2024
+              Jan - Junh 2025
             </div>
           </div>
         </div>

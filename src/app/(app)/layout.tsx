@@ -7,8 +7,8 @@ import { redirect } from "next/navigation";
 import { cookies } from 'next/headers';
 
 export const metadata: Metadata = {
-  title: 'Next Shadcn Dashboard Starter',
-  description: 'Basic dashboard with Next.js and Shadcn'
+  title: 'Delivery Saas',
+  description: 'Um sistema de delivery e cardapio online'
 };
 
 export default async function DashboardLayout({

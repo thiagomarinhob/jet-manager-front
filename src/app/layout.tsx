@@ -7,7 +7,7 @@ import { Lato } from 'next/font/google';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Next Shadcn',
+  title: 'Delivery Saas',
   description: 'Basic dashboard with Next.js and Shadcn'
 };
 

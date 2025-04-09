@@ -38,12 +38,12 @@ export default function SignInForm({ className, ...props }: React.ComponentProps
             )}
             <div className="flex flex-col gap-6">
               <div className="flex flex-col items-center text-center">
-                <h1 className="text-2xl font-bold">Welcome back</h1>
-                <p className="text-balance text-muted-foreground">Login to your Acme Inc account</p>
+                <h1 className="text-2xl font-bold">Bem vindo de volda !</h1>
+                <p className="text-balance text-muted-foreground">Login com seu email de restaurante</p>
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" name="email" type="email" placeholder="m@example.com" defaultValue={searchParams.get('email') ?? ''} required />
+                <Input id="email" name="email" type="email" placeholder="mail@example.com" defaultValue={searchParams.get('email') ?? ''} required />
                 {errors?.email && (
                   <p className="text-xs font-medium text-red-500 dark:text-red-400">
                     {errors.email[0]}
@@ -52,9 +52,9 @@ export default function SignInForm({ className, ...props }: React.ComponentProps
               </div>
               <div className="grid gap-2">
                 <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
+                  <Label htmlFor="password">Senha</Label>
                   <a href="#" className="ml-auto text-sm underline-offset-2 hover:underline">
-                    Forgot your password?
+                    Esqueceu sua senha?
                   </a>
                 </div>
                 <Input id="password" name="password" type="password" required />
@@ -68,7 +68,7 @@ export default function SignInForm({ className, ...props }: React.ComponentProps
                 {isPending ? (
                   <Loader2 className="size-4 animate-spin" />
                 ) : (
-                  'Sign in with e-mail'
+                  'Entrar'
                 )}
               </Button>
               {/* <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">

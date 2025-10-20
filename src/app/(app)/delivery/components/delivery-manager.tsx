@@ -1,5 +1,5 @@
 "use client"
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { X, Clock, CheckCircle, Truck, Coffee, Search, Eye, Phone } from 'lucide-react';
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,69 +14,69 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { updateStatusOrder } from '@/http/update-status-order';
 
 // Dados de exemplo
-const initialOrders = [
-  {
-    id: '001',
-    customer: 'João Silva',
-    phone: '(11) 98765-4321',
-    address: 'Rua das Flores, 123 - Jardim Primavera',
-    items: [
-      { name: 'Pizza Margherita', quantity: 1, price: 45.90, notes: 'Sem cebola' },
-      { name: 'Refrigerante Cola 2L', quantity: 1, price: 12.00, notes: '' }
-    ],
-    total: 57.90,
-    status: 'pending',
-    time: '18:45',
-    paymentMethod: 'Cartão de Crédito',
-    createdAt: new Date(2025, 2, 22, 18, 45)
-  },
-  {
-    id: '002',
-    customer: 'Maria Oliveira',
-    phone: '(11) 91234-5678',
-    address: 'Av. Principal, 456 - Centro',
-    items: [
-      { name: 'Combo XBurguer', quantity: 2, price: 34.90, notes: 'Um sem picles' },
-      { name: 'Batata Frita Grande', quantity: 1, price: 18.90, notes: '' },
-      { name: 'Milkshake Chocolate', quantity: 2, price: 14.90, notes: 'Um sem chantilly' }
-    ],
-    total: 118.50,
-    status: 'preparing',
-    time: '19:05',
-    paymentMethod: 'PIX',
-    createdAt: new Date(2025, 2, 22, 19, 5)
-  },
-  {
-    id: '003',
-    customer: 'Carlos Mendes',
-    phone: '(11) 97777-8888',
-    address: 'Rua dos Pinheiros, 789 - Vila Verde',
-    items: [
-      { name: 'Yakisoba Especial', quantity: 1, price: 42.90, notes: 'Extra de legumes' },
-      { name: 'Rolinho Primavera', quantity: 2, price: 10.00, notes: '' }
-    ],
-    total: 62.90,
-    status: 'ready',
-    time: '19:15',
-    paymentMethod: 'Dinheiro',
-    createdAt: new Date(2025, 2, 22, 19, 15)
-  },
-  {
-    id: '004',
-    customer: 'Ana Pereira',
-    phone: '(11) 95555-6666',
-    address: 'Alameda Santos, 234 - Jardim América',
-    items: [
-      { name: 'Salada Caesar', quantity: 1, price: 28.90, notes: 'Sem croutons' },
-      { name: 'Suco de Laranja', quantity: 1, price: 9.90, notes: 'Sem açúcar' }
-    ],
-    total: 38.80,
-    status: 'delivering',
-    time: '18:30',
-    paymentMethod: 'Cartão de Débito',
-    createdAt: new Date(2025, 2, 22, 18, 30)
-  }
-];
+// const initialOrders = [
+//   {
+//     id: '001',
+//     customer: 'João Silva',
+//     phone: '(11) 98765-4321',
+//     address: 'Rua das Flores, 123 - Jardim Primavera',
+//     items: [
+//       { name: 'Pizza Margherita', quantity: 1, price: 45.90, notes: 'Sem cebola' },
+//       { name: 'Refrigerante Cola 2L', quantity: 1, price: 12.00, notes: '' }
+//     ],
+//     total: 57.90,
+//     status: 'pending',
+//     time: '18:45',
+//     paymentMethod: 'Cartão de Crédito',
+//     createdAt: new Date(2025, 2, 22, 18, 45)
+//   },
+//   {
+//     id: '002',
+//     customer: 'Maria Oliveira',
+//     phone: '(11) 91234-5678',
+//     address: 'Av. Principal, 456 - Centro',
+//     items: [
+//       { name: 'Combo XBurguer', quantity: 2, price: 34.90, notes: 'Um sem picles' },
+//       { name: 'Batata Frita Grande', quantity: 1, price: 18.90, notes: '' },
+//       { name: 'Milkshake Chocolate', quantity: 2, price: 14.90, notes: 'Um sem chantilly' }
+//     ],
+//     total: 118.50,
+//     status: 'preparing',
+//     time: '19:05',
+//     paymentMethod: 'PIX',
+//     createdAt: new Date(2025, 2, 22, 19, 5)
+//   },
+//   {
+//     id: '003',
+//     customer: 'Carlos Mendes',
+//     phone: '(11) 97777-8888',
+//     address: 'Rua dos Pinheiros, 789 - Vila Verde',
+//     items: [
+//       { name: 'Yakisoba Especial', quantity: 1, price: 42.90, notes: 'Extra de legumes' },
+//       { name: 'Rolinho Primavera', quantity: 2, price: 10.00, notes: '' }
+//     ],
+//     total: 62.90,
+//     status: 'ready',
+//     time: '19:15',
+//     paymentMethod: 'Dinheiro',
+//     createdAt: new Date(2025, 2, 22, 19, 15)
+//   },
+//   {
+//     id: '004',
+//     customer: 'Ana Pereira',
+//     phone: '(11) 95555-6666',
+//     address: 'Alameda Santos, 234 - Jardim América',
+//     items: [
+//       { name: 'Salada Caesar', quantity: 1, price: 28.90, notes: 'Sem croutons' },
+//       { name: 'Suco de Laranja', quantity: 1, price: 9.90, notes: 'Sem açúcar' }
+//     ],
+//     total: 38.80,
+//     status: 'delivered',
+//     time: '18:30',
+//     paymentMethod: 'Cartão de Débito',
+//     createdAt: new Date(2025, 2, 22, 18, 30)
+//   }
+// ];
 
 interface IProps {
   count: number;
@@ -85,18 +85,85 @@ interface IProps {
 }
 
 // Componente principal
+type Order = {
+  id: string;
+  code?: string;
+  customer_name: string;
+  customer_phone: string;
+  delivery_address: string;
+  order_items: Array<{
+    id: string;
+    product: {
+      name: string;
+      notes?: string;
+    };
+    quantity: number;
+    price: number;
+  }>;
+  total_amount: number;
+  status: string;
+  created_at: string | Date;
+  restaurant_id?: string;
+};
+
 const DeliveryOrderManagement = (props: IProps) => {
   const data = props;
-  const [orders, setOrders] = useState([]);
+  console.log("🚀 ~ DeliveryOrderManagement ~ data:", data)
+  const [orders, setOrders] = useState<Order[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
 
   useEffect(() => {
     if (data && data.orders && data.orders.length > 0) {
-      setOrders(data.orders)
+      setOrders(data.orders as Order[])
     }
   }, [data])
+
+
+  useEffect(() => {
+    // 2. Estabelecer conexão WebSocket
+    const ws = new WebSocket('ws://localhost:8080/ws/devileries');
+
+    ws.onopen = () => {
+      console.log('Conectado ao WebSocket');
+      // Opcional: Enviar alguma mensagem inicial para o servidor se necessário
+    };
+
+    ws.onmessage = (event) => {
+      console.log('Mensagem WebSocket recebida:', event.data);
+      try {
+        const newOrder = JSON.parse(event.data);
+        console.log('Novo pedido recebido via WebSocket:', newOrder);
+
+        // Atualiza a lista de pedidos, adicionando o novo pedido no início
+        // Usamos uma função de callback para setOrders para garantir que estamos
+        // usando o estado mais recente (prevOrders)
+        setOrders(prevOrders => [newOrder, ...prevOrders]);
+
+      } catch (error) {
+        console.error('Erro ao parsear mensagem WebSocket:', error);
+      }
+    };
+
+    ws.onclose = () => {
+      console.log('Desconectado do WebSocket');
+      // Opcional: Tentar reconectar após um atraso
+    };
+
+    ws.onerror = (error) => {
+      console.log('Erro no WebSocket:', error);
+      // Lide com erros de WebSocket (ex: fechar a conexão, exibir mensagem)
+    };
+
+    // 3. Função de limpeza (cleanup) para fechar a conexão WebSocket
+    // quando o componente é desmontado para evitar vazamentos de memória.
+    return () => {
+      if (ws) {
+        ws.close();
+      }
+    };
+  }, []);
 
 
   // Status possíveis e suas configurações
@@ -122,14 +189,14 @@ const DeliveryOrderManagement = (props: IProps) => {
       variant: 'success',
       lightBg: 'bg-green-50'
     },
-    delivering: {
+    delivered: {
       name: 'Em Entrega',
       icon: <Truck className="h-4 w-4" />,
       color: 'bg-purple-500',
       variant: 'outline',
       lightBg: 'bg-purple-50'
     },
-    completed: {
+    paid: {
       name: 'Entregue',
       icon: <CheckCircle className="h-4 w-4" />,
       color: 'bg-gray-500',
@@ -156,14 +223,14 @@ const DeliveryOrderManagement = (props: IProps) => {
     pending: orders.filter(order => order.status === 'pending'),
     preparing: orders.filter(order => order.status === 'preparing'),
     ready: orders.filter(order => order.status === 'ready'),
-    delivering: orders.filter(order => order.status === 'delivering'),
-    completed: orders.filter(order => order.status === 'completed')
+    delivered: orders.filter(order => order.status === 'delivered'),
+    paid: orders.filter(order => order.status === 'paid')
   };
 
   // Atualizar status de um pedido
-  const updateOrderStatus = async (restaurant_id, order_id, status) => {
+  const updateOrderStatus = async (order_id: string, status: string) => {
     try {
-      const res = await updateStatusOrder({ restaurant_id, order_id, status });
+      const res = await updateStatusOrder({ order_id, status });
       console.log("🚀 ~ updateOrderStatus ~ res:", res)
       setOrders(prevOrders =>
         prevOrders.map(order =>
@@ -223,9 +290,9 @@ const DeliveryOrderManagement = (props: IProps) => {
     const statusFlow = {
       pending: 'preparing',
       preparing: 'ready',
-      ready: 'delivering',
-      delivering: 'completed',
-      completed: 'completed'
+      ready: 'delivered',
+      delivered: 'paid',
+      paid: 'paid'
     };
 
     return statusFlow[currentStatus] || currentStatus;
@@ -237,8 +304,8 @@ const DeliveryOrderManagement = (props: IProps) => {
       case 'pending': return 'warning';
       case 'preparing': return 'secondary';
       case 'ready': return 'success';
-      case 'delivering': return 'default';
-      case 'completed': return 'outline';
+      case 'delivered': return 'default';
+      case 'paid': return 'outline';
       default: return 'default';
     }
   };
@@ -325,7 +392,7 @@ const DeliveryOrderManagement = (props: IProps) => {
                               <Eye className="h-3 w-3" />
                             </Button>
                           </div>
-                          {status !== 'completed' &&
+                          {status !== 'paid' &&
                             <div className="flex">
                               <Button
                                 variant={statusConfig[getNextStatus(status)].variant}
@@ -333,7 +400,7 @@ const DeliveryOrderManagement = (props: IProps) => {
                                 className="text-xs h-8"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  updateOrderStatus(order.restaurant_id, order.id, getNextStatus(status));
+                                  updateOrderStatus(order.id, getNextStatus(status));
                                 }}
                               >
                                 → {statusConfig[getNextStatus(status)].name}
@@ -445,7 +512,7 @@ const DeliveryOrderManagement = (props: IProps) => {
                         variant={selectedOrder.status === status ? config.variant : "outline"}
                         size="sm"
                         className="flex items-center space-x-1"
-                        onClick={() => updateOrderStatus(selectedOrder.restaurant_id, selectedOrder.id, status)}
+                        onClick={() => updateOrderStatus(selectedOrder.id, status)}
                       >
                         <span>{config.icon}</span>
                         <span className="ml-1">{config.name}</span>
@@ -474,7 +541,7 @@ const DeliveryOrderManagement = (props: IProps) => {
                         <AlertDialogAction
                           className="bg-red-600 hover:bg-red-700"
                           onClick={() => {
-                            updateOrderStatus(selectedOrder.restaurant_id, selectedOrder.id, 'canceled');
+                            updateOrderStatus(selectedOrder.id, 'canceled');
                             setIsDetailOpen(false);
                           }}
                         >

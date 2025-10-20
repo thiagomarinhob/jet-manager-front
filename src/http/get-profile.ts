@@ -1,3 +1,4 @@
+import { HTTPError } from "ky";
 import { api } from "./api-client";
 
 interface GetProfile {
@@ -25,16 +26,10 @@ export default async function getProfile() {
     const result = await api.get(`v1/profile`).json<GetProfile>();
     return result;
   } catch (error) {
-    // Você pode personalizar o tratamento de erro conforme necessário
-    console.error("Erro ao buscar perfil:", error);
-
-    // Opção 1: Retornar um objeto vazio ou com valores padrão
-    // return {} as GetProfile;
-
-    // Opção 2: Retornar null para indicar que houve um erro
+    if (error instanceof HTTPError && error.response.status === 401) { 
+      console.log("Unauthorized access - please log in again.");
+      // Handle unauthorized access, e.g., redirect to login page
+    }
     return null;
-
-    // Opção 3: Lançar um erro personalizado
-    // throw new Error('Não foi possível obter o perfil. Tente novamente mais tarde.');
   }
 }

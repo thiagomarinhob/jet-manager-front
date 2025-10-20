@@ -6,10 +6,14 @@ interface OrdersType {
   orders: unknown[];
 }
 
-export default async function getDeliveryToday(restaurant_id: string) {
-  const result = await api
-    .get(`v1/restaurants/${restaurant_id}/delivery/today`)
-    .json<OrdersType>();
-
-  return result;
+export default async function getDeliveryToday() {
+  try {
+    const result = await api
+      .get(`v1/restaurants/delivery/today`)
+      .json<OrdersType>();
+  
+    return result;
+  } catch {
+    return null; // Return a default structure in case of error
+  }
 }

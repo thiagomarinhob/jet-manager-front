@@ -11,9 +11,9 @@ interface ResponseCategory {
   total_pages: number;
 }
 
-export default async function getCategories(restaurant_id: string) {
+export default async function getCategories() {
   const result = await api
-    .get(`v1/restaurants/${restaurant_id}/categories`)
+    .get(`v1/restaurants/categories`)
     .json<ResponseCategory>();
 
   return result;

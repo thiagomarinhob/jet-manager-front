@@ -19,6 +19,8 @@ export default async function DashboardLayout({
   const cookieStore = await cookies();
   const defaultOpen = cookieStore.get('sidebar:state')?.value === 'true';
   const user = await getProfile()
+  console.log("🚀 ~ user:", user)
+  
 
   if (!user || Object.keys(user).length === 0) { 
     redirect('/auth/sign-in')

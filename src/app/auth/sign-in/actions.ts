@@ -31,15 +31,15 @@ export async function signInWithEmailAndPassword(data: FormData) {
 
     const cookieStore = cookies(); // Pegamos uma única instância de cookies()
 
-    cookieStore.set("token", token, {
+    (await cookieStore).set("token", token, {
       path: "/",
       maxAge: 60 * 60 * 24 * 7, // 7 dias
     });
-    cookieStore.set("user-id", user.id, {
+    (await cookieStore).set("user-id", user.id, {
       path: "/",
       maxAge: 60 * 60 * 24 * 7, // 7 dias
     });
-    cookieStore.set("restaurant-id", restaurant.id, {
+    (await cookieStore).set("restaurant-id", restaurant.id, {
       path: "/",
       maxAge: 60 * 60 * 24 * 7, // 7 dias
     });

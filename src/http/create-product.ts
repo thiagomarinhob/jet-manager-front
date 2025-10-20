@@ -16,12 +16,9 @@ export async function createProduct({
   restaurant_id,
   data,
 }: CreateProductRequest) {
-  console.log("Enviando dados para a API:", { restaurant_id, data });
 
   try {
-    // Remova a propriedade restaurant_id aninhada no objeto json
-    // e envie os dados diretamente no formato que o servidor espera
-    const result = await api.post(`v1/restaurants/${restaurant_id}/products`, {
+    const result = await api.post(`v1/restaurants/products`, {
       json: {
         restaurant_id,
         name: data.name,
@@ -33,8 +30,6 @@ export async function createProduct({
         image_url: data.image_url,
       },
     });
-
-    console.log("Resposta completa da API:", await result.json());
     return result;
   } catch (error) {
     console.error("Erro ao criar produto:", error);

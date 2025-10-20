@@ -13,7 +13,6 @@ interface ResponseProducts {
 }
 
 interface PropsProducts {
-  restaurant_id: string;
   searchParams: SearchParams;
 }
 
@@ -40,7 +39,7 @@ export default async function getProducts(data: PropsProducts) {
 
   // Constrói a URL com query params (se houver)
   const queryString = queryParams.toString();
-  const url = `v1/restaurants/${data.restaurant_id}/products${
+  const url = `v1/restaurants/products${
     queryString ? `?${queryString}` : ""
   }`;
 

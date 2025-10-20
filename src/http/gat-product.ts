@@ -12,9 +12,9 @@ interface GetProduct {
   image_url: string;
 }
 
-export default async function getProduct(restaurant_id: string, product_id: string) {
+export default async function getProduct(product_id: string) {
   const result = await api
-    .get(`v1/restaurants/${restaurant_id}/products/${product_id}`)
+    .get(`v1/restaurants/products/${product_id}`)
     .json<GetProduct>();
 
   return result;

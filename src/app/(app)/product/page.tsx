@@ -32,8 +32,8 @@ export default async function Page({ searchParams }: pageProps) {
   const key = serialize({ ...params });
 
   const restaurant = await getCurrentRestaurant()
-  const data = await getProducts({restaurant_id: restaurant as string, searchParams})
-  const dataCategory = await getCategories(restaurant as string)
+  const data = await getProducts({searchParams})
+  const dataCategory = await getCategories()
 
   return (
     <PageContainer>
